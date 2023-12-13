@@ -1,5 +1,3 @@
-from urllib.parse import quote_plus
-
 class Config:
     MONGODB_PASSWORD = 'xRJaJpfMEfXh5exI'
     DEBUG = True

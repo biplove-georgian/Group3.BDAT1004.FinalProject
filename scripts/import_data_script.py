@@ -1,6 +1,16 @@
-import requests
 import time
-from app.database.mongodb_connector import collection
+from pymongo import MongoClient
+from script_config import Config
+import requests
+
+# MongoDB Setup
+# client = MongoClient("mongodb+srv://biplovejaisi77:xRJaJpfMEfXh5exI@bdatfinalproject.zn8dhe1.mongodb.net/bdatfinalproject?retryWrites=true&w=majority")
+# database = client["chicago_crime_db"]
+
+client = MongoClient(Config.MONGODB_URI)
+database = client["chicago_crime_db"]
+collection = database['chicago_crime_collection']
+
 
 def acquire_and_store_data():
     cc_api = "https://data.cityofchicago.org/resource/ijzp-q8t2.json"
@@ -8,6 +18,8 @@ def acquire_and_store_data():
 
     if response.status_code == 200:
         data = response.json()
+        print(data)
+        collection = database.get_collection("chicago_crime_collection")
         collection.insert_many(data)
         print("Data acquired and stored successfully.")
     else:
@@ -17,4 +29,4 @@ def acquire_and_store_data():
 while True:
     acquire_and_store_data()
     # Wait for 24 hours
-    time.sleep(60*60*24)
+    time.sleep(60 * 60 * 24)

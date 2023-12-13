@@ -3,7 +3,7 @@ from flask import Flask
 from api.data_transformer import data_transformer_app
 from visualization.chart_generator import visualization_app
 from database.mongodb_connector import get_mongo_collection
-from config import Config
+from app_config import Config
 
 app = Flask(__name__)
 app.config.from_object(Config)  # Load configurations from the Config class

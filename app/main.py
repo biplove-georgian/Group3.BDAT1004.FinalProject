@@ -1,5 +1,4 @@
-# app/main.py
-
+# Import All Required Libraries
 from flask import Flask
 from api.data_transformer import data_transformer_app
 from visualization.chart_generator import visualization_app

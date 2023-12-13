@@ -23,9 +23,10 @@ GROUP3.BDAT1004.FINALPROJECT/
 │   │   ├── mongodb_connector.py
 │   ├── templates/
 │       ├── dashboard.html
-│   ├── config.py
+│   ├── app_config.py
 ├── scripts/
 │   ├── import_data_script.py
+    ├── script_config.py
 ├── requirements.txt
 ├── README.md
 ├── .gitignore

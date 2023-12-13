@@ -1,0 +1,139 @@
+<!-- templates/dashboard.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Chicago Crime Dashboard</title>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript">
+        google.charts.load('current', {'packages':['corechart']});
+        google.charts.setOnLoadCallback(drawCharts);
+
+        function drawCharts() {
+            // Fetching data from Flask API endpoints and draw Google Charts
+            fetch('/api/top_10_crimes')
+                .then(response => response.json())
+                .then(topCrimesData => {
+                    const data = new google.visualization.DataTable();
+                    data.addColumn('string', 'Crime Type');
+                    data.addColumn('number', 'Count');
+                    data.addRows(topCrimesData.map((entry, index) => [entry._id.toString(), entry.count]));
+
+                    const options = {
+                        title: 'Top 10 Crimes in Chicago',
+                        colors: ['#4285f4', '#34a853', '#fbbc05', '#ea4335', '#6f42c1', '#fb8c00', '#795548', '#00796b', '#9e9e9e', '#e91e63'],
+                        width: '1200',
+                        height: 500,
+                        is3D: true,
+                        chartArea: { left: '15%', top: '15%', width: '70%', height: '70%' },
+                        hAxis: { title: 'Crime Type', titleTextStyle: { color: '#333', fontSize: 14 }, slantedText: true, slantedTextAngle: 45, textStyle: { fontSize: 10 } },
+                        vAxis: { title: 'Count', titleTextStyle: { color: '#333', fontSize: 14 }, textStyle: { fontSize: 12 } },
+                        legend: { position: 'top', textStyle: { fontSize: 12 } }
+                    };
+
+                    const chart = new google.visualization.ColumnChart(document.getElementById('topCrimesChart'));
+                    chart.draw(data, options);
+                });
+
+            fetch('/api/arrests')
+                .then(response => response.json())
+                .then(arrestsData => {
+                    const data = new google.visualization.DataTable();
+                    data.addColumn('string', 'Arrests');
+                    data.addColumn('number', 'Count');
+                    data.addRows(arrestsData.map(entry => [entry._id.toString(), entry.count]));
+
+                    const options = {
+                        title: 'Arrests Information',
+                        colors: ['#4285f4', '#34a853'],
+                        width: '1200',
+                        height: 500,
+                        is3D: true,
+                        chartArea: { left: '15%', top: '15%', width: '70%', height: '70%' },
+                        legend: { position: 'top', textStyle: { fontSize: 12 } }
+                    };
+
+                    const chart = new google.visualization.PieChart(document.getElementById('arrestsChart'));
+                    chart.draw(data, options);
+                });
+
+            fetch('/api/top_5_most_occurred_locations')
+                .then(response => response.json())
+                .then(locationData => {
+                    const data = new google.visualization.DataTable();
+                    data.addColumn('string', 'Location');
+                    data.addColumn('number', 'Count');
+                    data.addRows(locationData.map((entry, index) => [entry._id.toString(), entry.count]));
+
+                    const options = {
+                        title: 'Top 5 Most Occurred Locations',
+                        colors: ['#4285f4', '#34a853', '#fbbc05', '#ea4335', '#6f42c1'],
+                        width: '1200',
+                        height: 500,
+                        is3D: true,
+                        chartArea: { left: '15%', top: '15%', width: '70%', height: '70%' },
+                        hAxis: { title: 'Location', titleTextStyle: { color: '#333', fontSize: 14 }, slantedText: true, slantedTextAngle: 45, textStyle: { fontSize: 10 } },
+                        vAxis: { title: 'Count', titleTextStyle: { color: '#333', fontSize: 14 }, textStyle: { fontSize: 12 } },
+                        legend: { position: 'top', textStyle: { fontSize: 12 } }
+                    };
+
+                    const chart = new google.visualization.ColumnChart(document.getElementById('mostOccurredLocationsChart'));
+                    chart.draw(data, options);
+                });
+        }
+    </script>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+        }
+
+        .dashboard {
+            display: grid;
+            gap: 20px;
+            padding: 20px;
+            box-sizing: border-box;
+            max-width: 1400px;
+            margin: auto;
+        }
+
+        .chart-container {
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            box-sizing: border-box;
+            margin-bottom: 20px;
+        }
+
+        .main-title {
+            text-align: center;
+            font-size: 24px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="main-title">
+        <h1>Chicago Crime Dashboard</h1>
+    </div>
+    
+    <div class="dashboard">
+        <div class="chart-container">
+            <h2>Top 10 Crimes In Chicago</h2>
+            <div id="topCrimesChart"></div>
+        </div>
+
+        <div class="chart-container">
+            <h2>Arrests Information</h2>
+            <div id="arrestsChart"></div>
+        </div>
+
+        <div class="chart-container">
+            <h2>Top 5 Most Occurred Locations</h2>
+            <div id="mostOccurredLocationsChart"></div>
+        </div>
+    </div>
+</body>
+</html>

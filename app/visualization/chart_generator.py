@@ -14,45 +14,32 @@ def display_dashboard():
     return render_template('dashboard.html')
 
 
-@visualization_app.route('/api/items/range', methods=['GET'])
-def get_range_of_items():
-    # Get the end date (defaults to the current date)
-    end_date_str = request.args.get('end_date', str(datetime.utcnow().date()))
-    end_date = parse_date(end_date_str)
-
-    # Calculate the start date (defaults to 24 hours before the end date)
-    start_date_str = request.args.get('start_date', str(end_date - timedelta(days=1)))
-    start_date = parse_date(start_date_str)
-
-    # Convert date objects to datetime objects
-    start_date = datetime.combine(start_date, datetime.min.time())
-    end_date = datetime.combine(end_date, datetime.min.time()) + timedelta(days=1)
-
-    # Fetch items within the specified date range
-    items = list(current_app.config['collection'].find({
-        "updated_on": {"$gte": start_date, "$lt": end_date}
-    }))
-
-    return jsonify(parse_json(items))
-
-def parse_date(date_str):
-    try:
-        # Trying parsing date with flexible format
-        return datetime.strptime(date_str, "%Y-%m-%dT%H:%M:%S.%f").replace(microsecond=0).date()
-    except ValueError:
-        try:
-            # Trying parsing date without time information
-            return datetime.strptime(date_str, "%Y-%m-%d").date()
-        except ValueError as e:
-            # Handling parsing errors
-            raise ValueError(f"Error parsing date: {date_str}. {e}")
-
-
 # API endpoint to get information about a particular record by ID column in dataset
 @visualization_app.route('/api/items/<item_id>', methods=['GET'])
 def get_item_by_id(item_id):
     item = current_app.config['collection'].find_one({'id': item_id})
     return parse_json(item)
+
+#API endpoint to get information about a records from given ranges
+@visualization_app.route('/api/items/range', methods=['GET'])
+def get_items_within_range():
+    try:
+        # Get the start and end dates from the request parameters
+        start_date_str = request.args.get('start_date')
+        end_date_str = request.args.get('end_date')
+
+        # Define the query to filter items within the specified date range
+        query = {
+            "updated_on": {"$gte": start_date_str, "$lt": end_date_str}
+        }
+
+        # Fetch items within the specified date range
+        items = list(current_app.config['collection'].find(query))
+
+        return parse_json(items)
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
 
 
 # API endpoint to get information about top 10 crimes in Chicago

@@ -14,9 +14,6 @@ def display_dashboard():
     return render_template('dashboard.html')
 
 
-def parse_json(data):
-    return json_util.loads(json_util.dumps(data))
-
 @visualization_app.route('/api/items/range', methods=['GET'])
 def get_range_of_items():
     # Get the end date (defaults to the current date)
@@ -40,19 +37,15 @@ def get_range_of_items():
 
 def parse_date(date_str):
     try:
-        # Try parsing date with flexible format
+        # Trying parsing date with flexible format
         return datetime.strptime(date_str, "%Y-%m-%dT%H:%M:%S.%f").replace(microsecond=0).date()
     except ValueError:
         try:
-            # Try parsing date without time information
+            # Trying parsing date without time information
             return datetime.strptime(date_str, "%Y-%m-%d").date()
         except ValueError as e:
-            # Handle parsing errors
+            # Handling parsing errors
             raise ValueError(f"Error parsing date: {date_str}. {e}")
-
-
-
-
 
 
 # API endpoint to get information about a particular record by ID column in dataset
